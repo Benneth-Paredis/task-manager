@@ -1,73 +1,62 @@
-# React + TypeScript + Vite
+# Task Manager
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A responsive Kanban-style task manager built with React, TypeScript, and Redux Toolkit. Manage tasks across three stages: Pending, In Progress, and Complete with drag-and-drop support, persistent storage, and real-time cross-tab synchronization.
 
-Currently, two official plugins are available:
+## Running Locally
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
-
-## React Compiler
-
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
-
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```bash
+git clone https://github.com/Benneth-Paredis/task-manager.git
+cd task-manager
+npm install
+npm run dev
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+The app runs at `http://localhost:5173`.
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+## Time Spent
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+Approximately 3 hours.
+
+## Implementation
+
+### Architecture
+
+The app uses a flat task array in a Redux Toolkit store, with each task holding a `stage` and `order` field. Columns are derived by filtering on `stage` and sorting by `order`. This keeps state management simple, changing a task's stage is a single field update rather than splicing between arrays.
+
+### Components
+
+- **Board** — The smart component. Connects to Redux, manages modal/dialog state, and handles all drag-and-drop events. Only component that dispatches actions.
+- **Column** — Renders a droppable zone with a sorted list of task cards. Receives data and callbacks via props.
+- **TaskCard** — Displays task content with edit, delete, and stage-change controls. Draggable via @dnd-kit.
+- **TaskModal** — Dual-purpose modal for adding and editing tasks. Uses local state for form inputs, reports back via `onSave` callback.
+- **ConfirmDialog** — Simple confirmation prompt before task deletion.
+
+### State Management
+
+Redux Toolkit with a single `tasksSlice` containing reducers for add, edit, delete, stage change, reorder, and full state replacement. A custom middleware persists state to localStorage after every action.
+
+### Edge Case Handling
+
+- **Empty titles**: Blocked by input validation and a disabled submit button.
+- **Long descriptions**: Handled with `word-break: break-word` to prevent layout overflow.
+- **Rapid task movements**: Safe because Redux processes actions synchronously, each dispatch sees the latest state.
+
+## Bonus Points Covered
+
+- **Drag and drop**: Implemented with @dnd-kit. Supports reordering within columns and moving tasks between stages.
+- **LocalStorage persistence**: A Redux middleware saves state after every action. State is hydrated on startup via `preloadedState`.
+- **Cross-tab sync**: Listens for `StorageEvent` on the window. Changes in one tab are reflected in all other open tabs instantly.
+
+## Tech Stack
+
+- React 18 + TypeScript
+- Vite
+- Redux Toolkit
+- @dnd-kit (drag and drop)
+- CSS (no framework)
+
+## Design
+
+The UI follows a glassmorphism design language with a gradient backdrop and translucent card surfaces, creating a layered, modern feel. 
+
+## 
