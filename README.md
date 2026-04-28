@@ -59,4 +59,6 @@ Redux Toolkit with a single `tasksSlice` containing reducers for add, edit, dele
 
 The UI follows a glassmorphism design language with a gradient backdrop and translucent card surfaces, creating a layered, modern feel. 
 
-## 
+## URL
+
+task-manager-ten-rose-93.vercel.app
